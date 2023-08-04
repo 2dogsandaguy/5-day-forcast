@@ -1,13 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="/style.CSS">
+    <link rel="stylesheet" href="style.CSS">
 </head>
 <header>WEATHER FORECAST</header>
+
 <body>
-    <link rel="stylesheet" href="/script.js">
+  <section class="wrapper"> 
+    <section class="side-bar">
+        <label for="search-input">Search For A City :</label>
+        <input type="text" id="search-input" name="query" placeholder="Enter your search term" />
+        <input type="submit" value="Search">
+        <div id="past-history">
+            <li>tokyo</li>
+            <li>dallas</li>
+            <li>new jersey</li>
+            <li>bosten</li>
+        </div>
+    </section>
+    <section>
+        <section class="smaller-header">
+            <h2 class="city"> newjersey</h2>
+            <div class="weather">temp</div>
+            <div class="wind">90 MPH</div>
+            <div class="humidity"> 30%</div>
+        </section>
+        <section class="5-day">
+            
+        </section>
+    </section>
+  </section>  
+    <link rel="stylesheet" href="script.js">
 </body>
+
 </html>
