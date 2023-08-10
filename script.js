@@ -1,40 +1,25 @@
-/* let weather = {
-    apikey: "0b2bac7de75a83d23f6c55ae40424655",
-    fetchWeather: function () {
-        fetch(
-            'https://api.openweathermap.org/data/2.5/forecast?lat=40.7128&lon=-74.0060&appid=0b2bac7de75a83d23f6c55ae40424655'
-        )
-            .then((response) => response.json())
-            .then((data) => console.log(data))
-            .catch((error) => console.log("Error fetching data:", error));
-    },
-};
-
-// Call the fetchWeather method
-weather.fetchWeather(); */
-
-
-
-
 // Define an object called 'weather' to store weather-related functions and data
 var weather = {
-    // Store the API key needed to make requests to the weather API
-    apikey: "0b2bac7de75a83d23f6c55ae40424655",
+    apikey: '0b2bac7de75a83d23f6c55ae40424655',
 
-    // Function to fetch weather data for a given city name
-    fetchWeather: function (cityName) {
-        // Create the API URL by combining the base URL with the cityName and the API key
+    fetchWeather: function(cityName) {
         var apiUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${cityName}&appid=${this.apikey}&units=metric`;
-
-        // Make a fetch request to the API URL to get the weather data
+      
         fetch(apiUrl)
-            // Parse the response as JSON and continue with the promise chain
-            .then((response) => response.json())
-            // Once the data is parsed, call the 'displayWeatherInfo' method with the fetched data
-            .then((data) => this.displayWeatherInfo(data))
-            // If there is an error during the fetch request, log the error message
-            .catch((error) => console.log('Error fetching weather data:', error));
-    },
+          .then(response => {
+            if (response.status === 200) {
+              return response.json();
+            } else {
+              throw new Error('Weather data not available for this city.');
+            }
+          })
+          .then(data => {
+            this.displayWeatherInfo(data);
+            storeCity(cityName); // Call the storeCity function to store the searched city
+            displayPastHistory(); // display the localstorage
+          })
+          .catch(error => console.log('Error fetching weather data:', error.message));
+      },
 
     // Function to display weather information for a given city
     displayWeatherInfo: function (data) {
@@ -85,11 +70,11 @@ var weather = {
         // Extract weather information for this data point
         const date = new Date(item.dt * 1000).toDateString(); // Convert timestamp to date object
         const temperature = item.main.temp;
-        const tempMin = item.main.temp_min;
-        const tempMax = item.main.temp_max;
         const weatherDescription = item.weather[0].description;
         const windSpeed = item.wind.speed;
         const humidity = item.main.humidity;
+        const iconCode = item.weather[0].icon; 
+        const iconUrl = `https://openweathermap.org/img/w/${iconCode}.png`; 
 
 
         // Create a new div element for the data point
@@ -118,52 +103,24 @@ var weather = {
         humidityElement.id = 'humidity-0';
         humidityElement.innerHTML = `Humidity: ${humidity}%`;
 
+        var iconElement = document.createElement('img'); 
+        iconElement.src = iconUrl; 
+        iconElement.alt = 'Weather Icon'; 
+
         // Append the individual elements to the data point div
         dataPointElement.appendChild(dateElement);
         dataPointElement.appendChild(temperatureElement);
         dataPointElement.appendChild(descriptionElement);
         dataPointElement.appendChild(windElement);
         dataPointElement.appendChild(humidityElement);
+        dataPointElement.appendChild(iconElement);
 
         // Append the new div element to the 'weather-data' element
         weatherDataElement.appendChild(dataPointElement);
 
     }
-}
-function showfiveDay() {
-    var apikey = "0b2bac7de75a83d23f6c55ae40424655"
-     var URL = `https://api.openweathermap.org/data/2.5/forecast/daily?lat=37.7749&lon=-122.4194&cnt=5&appid=` + apikey + `&units=imperial`;
+};
 
-    fetch(URL)
-        .then(response => response.json())
-        .then(data => {
-            const forecastData = data.list;
-            const dailyForecast = [];
-console.log(data);
-            
-            for (let i = 0; i < forecastData.length; i++) {
-                const forecast = forecastData[i];
-                const date = forecast.dt_txt.split(" ")[0];
-                const temperature = forecast.main.temp;
-                const description = forecast.weather[0].description;
-
-
-                const dailyData = {
-                    date: date,
-                    temperature: temperature,
-                    description: description
-                };
-
-                dailyForecast.push(dailyData);
-            }
-
-
-            console.log(dailyForecast);
-        })
-        .catch(error => {
-            console.error(error);
-        })
-}
 // Function to be called when the search button is clicked
 function searchWeather() {
     // Get the value entered in the input field with ID 'cityInput'
@@ -173,36 +130,173 @@ function searchWeather() {
     if (cityName.trim() !== '') {
         // If the city name is valid, call the 'fetchWeather' method to get weather data
         weather.fetchWeather(cityName);
+        console.log('cityName; '+ cityName);
+        
     } else {
         // If the city name is empty or contains only white spaces, show an alert to the user
         alert('Please enter a city name.');
     }
-}
+    //show the 5 day forcast
+    showfiveDay();
+};
+
+function storeCity(cityName) {
+    // Check if the city array already exists in local storage
+    let cities = localStorage.getItem('cities');
+    if (cities === null) {
+      // If it doesn't exist, create a new array with the searched city
+      cities = [cityName];
+    } else {
+      // If it exists, parse the stored JSON string into an array and add the searched city
+      cities = JSON.parse(cities);
+      cities.push(cityName);
+    }
+    // Convert the cities array to a JSON string and store it in local storage
+    localStorage.setItem('cities', JSON.stringify(cities));
+  };
+
+
+function showfiveDay() {
+    var apikey = "0b2bac7de75a83d23f6c55ae40424655";
+    var URL = `https://api.openweathermap.org/data/2.5/forecast/?lat=37.7749&lon=-122.4194&appid=${apikey}&units=metric`;
+  
+    fetch(URL)
+      .then(response => response.json())
+      .then(data => {
+        const forecastData = data.list;
+        const dailyForecast = [];
+  
+        for (let i = 0; i < forecastData.length; i += 8) {
+          let forecast = forecastData[i];
+          let date = forecast.dt_txt.split(" ")[0];
+          let temperature = forecast.main.temp;
+          let description = forecast.weather[0].description;
+          let windSpeed = forecast.wind.speed; 
+          let iconCode = forecast.weather[0].icon;
+          let humidity = forecast.main.humidity;
+          let iconUrl = `https://openweathermap.org/img/w/${iconCode}.png`;
+  
+          const dailyData = {
+            date: date,
+            temperature: temperature,
+            description: description,
+            windSpeed: windSpeed,
+            humidity: humidity,
+            iconUrl: iconUrl
+          };
+  
+          dailyForecast.push(dailyData);
+        }
+  
+        // Select the HTML element where you want to display the forecast
+        var weatherContainer = document.getElementById('weather-container');
+  
+        // Clear the previous forecast data
+        weatherContainer.innerHTML = '';
+  
+        // Iterate over the dailyForecast array and create a new 'col' element for each day
+        dailyForecast.forEach(function(data) {
+          var colElement = document.createElement('div');
+          colElement.className = 'col';
+  
+          // Create individual elements for each piece of forecast information
+          var dateElement = document.createElement('p');
+          dateElement.innerHTML = `Date: ${data.date}`;
+  
+          var temperatureElement = document.createElement('p');
+          temperatureElement.innerHTML = `Temperature: ${data.temperature} celsius`;
+
+          var humidityElement = document.createElement('p');
+          humidityElement.innerHTML = `Humidity: ${data.humidity}%`;
+
+          var windElement = document.createElement('p'); 
+          windElement.innerHTML = `Wind Speed: ${data.windSpeed} m/s`; 
+  
+          var descriptionElement = document.createElement('p');
+          descriptionElement.innerHTML = `Description: ${data.description}`;
+
+  
+          var iconElement = document.createElement('img');
+          iconElement.src = data.iconUrl;
+  
+          // Append the individual elements to the 'col' element
+          colElement.appendChild(dateElement);
+          colElement.appendChild(temperatureElement);
+          colElement.appendChild(humidityElement);
+          colElement.appendChild(windElement);
+          colElement.appendChild(descriptionElement);
+          colElement.appendChild(iconElement);
+  
+          // Append the new 'col' element to the 'weather-container' element
+          weatherContainer.appendChild(colElement);
+        });
+      })
+      .catch(error => console.log('Error fetching forecast data:', error.message));
+  };
+
+function displayWeatherInfo(dailyForecast) {
+    var weatherInfoElement = document.getElementById('weather-container');
+  
+    // Clear the previous weather info
+    weatherInfoElement.innerHTML = '';
+  
+    // Iterate over the daily forecast data and create HTML elements to display the info
+    dailyForecast.forEach(function(forecast) {
+      var forecastElement = document.createElement('div');
+      forecastElement.classList.add('forecast');
+  
+      var dateElement = document.createElement('p');
+      dateElement.innerHTML = `Date: ${forecast.date}`;
+      forecastElement.appendChild(dateElement);
+  
+      var temperatureElement = document.createElement('p');
+      temperatureElement.innerHTML = `Temperature: ${forecast.temperature}°F`;
+      forecastElement.appendChild(temperatureElement);
+  
+      var descriptionElement = document.createElement('p');
+      descriptionElement.innerHTML = `Description: ${forecast.description}`;
+      forecastElement.appendChild(descriptionElement);
+  
+      var iconElement = document.createElement('img');
+      iconElement.src = forecast.iconUrl;
+      forecastElement.appendChild(iconElement);
+  
+      weatherInfoElement.appendChild(forecastElement);
+    });
+  };
+
+  function displayPastHistory() {
+    // Get the past history element from the HTML
+    var pastHistoryElement = document.getElementById('past-history');
+  
+    // Get the stored cities from local storage
+    var cities = localStorage.getItem('cities');
+  
+    // Check if there are any stored cities
+    if (cities !== null) {
+      // Parse the stored JSON string into an array
+      cities = JSON.parse(cities);
+      let uniqueCities = new Set();
+      cities.forEach(city => uniqueCities.add(city));
+      uniqueCities = Array.from(uniqueCities);
+
+      var newestCities = cities.slice(-10);
+      newestCities = newestCities.reverse();
+      // Clear the previous city list
+      pastHistoryElement.innerHTML = '';
+  
+      // copy over the cities array and create list items for each city
+      newestCities.forEach(function(city) {
+
+        var listItem = document.createElement('li');
+        listItem.innerHTML = city;
+        pastHistoryElement.appendChild(listItem);
+      });
+    };
+  };
+  
+  // Call the displayPastHistory function to populate the past history in the HTML
+  displayPastHistory();
 document.getElementById('search-btn').addEventListener('click', searchWeather);
 
-
-
-/*     // Function to display weather-related data for each data point
-    displayWeatherData: function (data) {
-        // Loop through each data point in the 'list' property of the fetched data
-        data.list.forEach((item, index) => {
-            // Extract weather information for each data point
-            const date = new Date(item.dt * 1000); // Convert timestamp to date object
-            const temperature = item.main.temp;
-            const weatherDescription = item.weather[0].description;
-            const windSpeed = item.wind.speed;
-            const humidity = item.main.humidity;
-           
-            
-            // Log the weather information for the current data point to the console
-            console.log(`Data Point ${index}`);
-            console.log(`Date: ${date}`);
-            console.log(`Temperature: ${temperature} celsius`);
-            console.log(`Weather Description: ${weatherDescription}`);
-            console.log(`Wind Speed: ${windSpeed} m/s`);
-            console.log(`Humidity: ${humidity}%`);
-            console.log('-----------------------');
-        });
-    }
-}; */
 
