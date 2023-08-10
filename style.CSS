@@ -28,13 +28,7 @@ padding: 10px;
 #past-history li {
   padding: 15px;  
 }
-/* .smaller-header {
-  border-width: 2px;
-  border-style: solid;
-  border-color: black;
-  padding: 15px;
-  
-} */
+
 .list-group {
   padding: 0;
   list-style: none;
