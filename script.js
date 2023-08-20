@@ -17,6 +17,7 @@ var weather = {
             this.displayWeatherInfo(data);
             storeCity(cityName); // Call the storeCity function to store the searched city
             displayPastHistory(); // display the localstorage
+            showfiveDay(cityName); // Call the showfiveDay function with the searched cityName
           })
           .catch(error => console.log('Error fetching weather data:', error.message));
       },
@@ -129,110 +130,104 @@ function searchWeather() {
     // Check if the city name is not empty or only contains white spaces
     if (cityName.trim() !== '') {
         // If the city name is valid, call the 'fetchWeather' method to get weather data
-        weather.fetchWeather(cityName);
         console.log('cityName; '+ cityName);
+        weather.fetchWeather(cityName);
+        showfiveDay(cityName); // Call the showfiveDay function here
+        
         
     } else {
         // If the city name is empty or contains only white spaces, show an alert to the user
         alert('Please enter a city name.');
     }
-    //show the 5 day forcast
-    showfiveDay();
 };
 
 function storeCity(cityName) {
-    // Check if the city array already exists in local storage
-    let cities = localStorage.getItem('cities');
-    if (cities === null) {
-      // If it doesn't exist, create a new array with the searched city
+  let cities = localStorage.getItem('cities');
+  if (cities === null) {
+      // If no cities are stored, create a new array with the searched city
       cities = [cityName];
-    } else {
-      // If it exists, parse the stored JSON string into an array and add the searched city
+  } else {
+      // If cities are stored, parse the JSON string and check for duplicates
       cities = JSON.parse(cities);
-      cities.push(cityName);
-    }
-    // Convert the cities array to a JSON string and store it in local storage
-    localStorage.setItem('cities', JSON.stringify(cities));
+      
+      // Check if the city name already exists in the array
+      if (!cities.includes(cityName)) {
+          // Add the city name to the array if it's not a duplicate
+          cities.push(cityName);
+      }
   };
-
-
-function showfiveDay() {
-    var apikey = "0b2bac7de75a83d23f6c55ae40424655";
-    var URL = `https://api.openweathermap.org/data/2.5/forecast/?lat=37.7749&lon=-122.4194&appid=${apikey}&units=metric`;
   
-    fetch(URL)
+  // Limit the array length to store only the last 10 unique cities
+  cities = cities.slice(-10);
+  
+  // Store the updated array as JSON string in localStorage
+  localStorage.setItem('cities', JSON.stringify(cities));
+};
+
+
+
+  function showfiveDay(cityName) {
+    var apikey = "0b2bac7de75a83d23f6c55ae40424655";
+    var forecastURL = `https://api.openweathermap.org/data/2.5/forecast?q=${cityName}&appid=${apikey}&units=metric`;
+
+    fetch(forecastURL)
       .then(response => response.json())
       .then(data => {
         const forecastData = data.list;
         const dailyForecast = [];
-  
-        for (let i = 0; i < forecastData.length; i += 8) {
-          let forecast = forecastData[i];
-          let date = forecast.dt_txt.split(" ")[0];
-          let temperature = forecast.main.temp;
-          let description = forecast.weather[0].description;
-          let windSpeed = forecast.wind.speed; 
-          let iconCode = forecast.weather[0].icon;
-          let humidity = forecast.main.humidity;
-          let iconUrl = `https://openweathermap.org/img/w/${iconCode}.png`;
-  
-          const dailyData = {
-            date: date,
-            temperature: temperature,
-            description: description,
-            windSpeed: windSpeed,
-            humidity: humidity,
-            iconUrl: iconUrl
-          };
-  
-          dailyForecast.push(dailyData);
-        }
-  
-        // Select the HTML element where you want to display the forecast
-        var weatherContainer = document.getElementById('weather-container');
-  
+
         // Clear the previous forecast data
+        var weatherContainer = document.getElementById('weather-container');
         weatherContainer.innerHTML = '';
-  
-        // Iterate over the dailyForecast array and create a new 'col' element for each day
-        dailyForecast.forEach(function(data) {
-          var colElement = document.createElement('div');
-          colElement.className = 'col';
-  
-          // Create individual elements for each piece of forecast information
-          var dateElement = document.createElement('p');
-          dateElement.innerHTML = `Date: ${data.date}`;
-  
-          var temperatureElement = document.createElement('p');
-          temperatureElement.innerHTML = `Temperature: ${data.temperature} celsius`;
 
-          var humidityElement = document.createElement('p');
-          humidityElement.innerHTML = `Humidity: ${data.humidity}%`;
+        for (let i = 0; i < forecastData.length; i += 8) {
+            let forecast = forecastData[i];
+            let date = forecast.dt_txt.split(" ")[0];
+            let temperature = forecast.main.temp;
+            let description = forecast.weather[0].description;
+            let windSpeed = forecast.wind.speed; 
+            let iconCode = forecast.weather[0].icon;
+            let humidity = forecast.main.humidity;
+            let iconUrl = `https://openweathermap.org/img/w/${iconCode}.png`;
 
-          var windElement = document.createElement('p'); 
-          windElement.innerHTML = `Wind Speed: ${data.windSpeed} m/s`; 
-  
-          var descriptionElement = document.createElement('p');
-          descriptionElement.innerHTML = `Description: ${data.description}`;
+            // Create a new 'col' element for each day
+            var colElement = document.createElement('div');
+            colElement.className = 'col';
 
-  
-          var iconElement = document.createElement('img');
-          iconElement.src = data.iconUrl;
-  
-          // Append the individual elements to the 'col' element
-          colElement.appendChild(dateElement);
-          colElement.appendChild(temperatureElement);
-          colElement.appendChild(humidityElement);
-          colElement.appendChild(windElement);
-          colElement.appendChild(descriptionElement);
-          colElement.appendChild(iconElement);
-  
-          // Append the new 'col' element to the 'weather-container' element
-          weatherContainer.appendChild(colElement);
-        });
+            // Create individual elements for each piece of forecast information
+            var dateElement = document.createElement('p');
+            dateElement.innerHTML = `Date: ${date}`;
+
+            var temperatureElement = document.createElement('p');
+            temperatureElement.innerHTML = `Temperature: ${temperature} celsius`;
+
+            var humidityElement = document.createElement('p');
+            humidityElement.innerHTML = `Humidity: ${humidity}%`;
+
+            var windElement = document.createElement('p'); 
+            windElement.innerHTML = `Wind Speed: ${windSpeed} m/s`; 
+
+            var descriptionElement = document.createElement('p');
+            descriptionElement.innerHTML = `Description: ${description}`;
+
+            var iconElement = document.createElement('img');
+            iconElement.src = iconUrl;
+
+            // Append the individual elements to the 'col' element
+            colElement.appendChild(dateElement);
+            colElement.appendChild(temperatureElement);
+            colElement.appendChild(humidityElement);
+            colElement.appendChild(windElement);
+            colElement.appendChild(descriptionElement);
+            colElement.appendChild(iconElement);
+
+            // Append the new 'col' element to the 'weather-container' element
+            weatherContainer.appendChild(colElement);
+        }
       })
       .catch(error => console.log('Error fetching forecast data:', error.message));
-  };
+};
+
 
 function displayWeatherInfo(dailyForecast) {
     var weatherInfoElement = document.getElementById('weather-container');
@@ -299,4 +294,10 @@ function displayWeatherInfo(dailyForecast) {
   displayPastHistory();
 document.getElementById('search-btn').addEventListener('click', searchWeather);
 
+// Function to be called when the page is loaded
+window.onload = function() {
+  var defaultCityName = "New Jersey"; // Replace with the desired default city name
+  weather.fetchWeather(defaultCityName);
+  showfiveDay(defaultCityName);
+};
 
