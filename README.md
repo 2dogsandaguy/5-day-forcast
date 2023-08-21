@@ -30,9 +30,9 @@ This is good for if you need to know the weather.
 https://www.youtube.com/watch?v=duNmhKgtcsI
 
 
-![nerd-quiz-javascript]
-![5-day-forcast ](/assets/images/Screenshot%202023-07-29%20133137.png)
-![5-day-forcast ](/assets/images/Screenshot%202023-07-29%20133209.png)
+![5-day-forcast]
+![5-day-forcast ](/assets/images/Screenshot%202023-08-20%20210532.png)
+![5-day-forcast ](/assets/images/Screenshot%202023-08-20%20210554.png)
 
 
 
