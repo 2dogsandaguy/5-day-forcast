@@ -82,7 +82,7 @@ header {
   border-radius: 5px;
   margin-bottom: 10px;
   opacity: 0;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.5s ease-in-out; /* Apply the transition effect */
 }
 
 
@@ -99,23 +99,6 @@ header {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   margin-right: 20px;
   margin-bottom: 20px;
-}
-
-
-
-.weather-data-point {
-  opacity: 0; 
-  transition: opacity 0.5s ease-in-out; /* Apply the transition effect */
-}
-
-.history-button {
-  display: block;
-  margin: 5px;
-  padding: 10px;
-  background-color: #f0f0f0;
-  border: 1px solid #ccc;
-  cursor: pointer;
-  text-align: left;
 }
 
 /* Media query for responsive layout */
