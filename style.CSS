@@ -1,4 +1,3 @@
-/* Reset some default styles and apply a basic layout */
 * {
   margin: 0;
   padding: 0;
@@ -7,113 +6,126 @@
 
 body {
   font-family: Arial, sans-serif;
-  background-color: #f0f0f0;
+  background-color: #f5f5f5;
   color: #333;
+}
+
+header {
+  background-color: #4285f4;
+  color: #fff;
+  text-align: center;
+  padding: 10px 0;
+  font-size: 24px;
 }
 
 .wrapper {
   display: flex;
   justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto;
   padding: 20px;
 }
 
 .side-bar {
-  flex: 1;
-  padding: 20px;
+  width: 300px;
   background-color: #fff;
+  padding: 20px;
   border-radius: 5px;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 #cityInput {
   width: 100%;
-  padding: 8px;
+  padding: 10px;
+  margin-bottom: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
 }
 
 #search-btn {
-  margin-top: 10px;
-  background-color: #007bff;
+  display: block;
+  width: 100%;
+  padding: 10px;
+  background-color: #4285f4;
   color: #fff;
   border: none;
-  padding: 8px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: center;
+  margin: 0 auto;
+}
+
+
+.history-button {
+  display: block;
+  margin: 5px 0;
+  padding: 5px 10px;
+  background-color: #f5f5f5;
+  border: 1px solid #ccc;
   border-radius: 5px;
   cursor: pointer;
 }
 
-#past-history {
-  margin-top: 20px;
-  list-style: none;
-}
 
-#weather-container {
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-}
-
-.col {
-  flex-basis: calc(33.33% - 20px);
-  margin-bottom: 20px;
+.p-4 {
+  flex: 1;
   background-color: #fff;
   padding: 20px;
   border-radius: 5px;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-/* Style the header and section headers */
-header {
-  text-align: center;
-  background-color: #007bff;
-  color: #fff;
-  padding: 10px 0;
-}
 
-h2 {
+.weather-data-point {
+  padding: 15px;
+  background-color: #f5f5f5;
+  border-radius: 5px;
   margin-bottom: 10px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
-/* ... (previous CSS code) */
 
-.side-bar {
-    flex: 1;
-    padding: 20px;
-    background-color: #fff;
-    border-radius: 5px;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-    position: relative; /* Add this for relative positioning */
+.row.weather-forecast {
+  margin-top: 20px;
 }
 
-#cityInput,
-#search-btn {
-    border: none;
-    padding: 8px 16px;
-    border-radius: 999px; /* Use a large value for a circular shape */
-    background-color: #f0f0f0;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-    margin-bottom: 10px;
-    display: block;
-    width: 100%;
-    transition: background-color 0.3s, color 0.3s, transform 0.2s;
+
+.col {
+  flex-basis: calc(33.333% - 20px);
+  padding: 15px;
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  margin-right: 20px;
+  margin-bottom: 20px;
 }
 
-#search-btn {
-    background-color: #007bff;
-    color: #fff;
-    cursor: pointer;
-    text-align: center;
+
+
+.weather-data-point {
+  opacity: 0; 
+  transition: opacity 0.5s ease-in-out; /* Apply the transition effect */
 }
 
-/* Add a hover effect for interactive elements */
-#cityInput:hover,
-#search-btn:hover {
-    background-color: #007bff;
-    color: #fff;
-    transform: scale(1.05);
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+.history-button {
+  display: block;
+  margin: 5px;
+  padding: 10px;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  text-align: left;
 }
 
-/* ... (rest of the previous CSS code) */
+/* Media query for responsive layout */
+@media (max-width: 768px) {
+  .wrapper {
+      flex-direction: column;
+  }
 
-
+  .col {
+      flex-basis: 100%;
+      margin-right: 0;
+  }
+}
